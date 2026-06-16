@@ -6,317 +6,135 @@
 <title>ติดตามการชำระหนี้</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap');
-
   :root {
-    --green: #1D9E75;
-    --green-light: #E1F5EE;
-    --green-dark: #0F6E56;
-    --gray-100: #F6F6F4;
-    --gray-200: #ECEAE5;
-    --gray-400: #B4B2A9;
-    --gray-600: #5F5E5A;
-    --gray-900: #2C2C2A;
-    --radius: 14px;
-    --radius-sm: 8px;
+    --green:#1D9E75; --green-light:#E1F5EE; --green-dark:#0F6E56;
+    --gray-50:#FAFAF8; --gray-100:#F6F6F4; --gray-200:#ECEAE5;
+    --gray-400:#B4B2A9; --gray-600:#5F5E5A; --gray-900:#2C2C2A;
+    --red:#D85A30; --radius:14px; --radius-sm:8px;
   }
-
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-
-  body {
-    font-family: 'Sarabun', sans-serif;
-    background: var(--gray-100);
-    color: var(--gray-900);
-    min-height: 100vh;
-    padding-bottom: 3rem;
-  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Sarabun',sans-serif;background:var(--gray-100);color:var(--gray-900);min-height:100vh;padding-bottom:3rem}
 
   /* Header */
-  .header {
-    background: #fff;
-    border-bottom: 1px solid var(--gray-200);
-    padding: 1.25rem 1.5rem;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-  }
-  .header-inner {
-    max-width: 520px;
-    margin: 0 auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .header h1 {
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--gray-900);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .header h1 svg { color: var(--green); }
-  .btn-refresh {
-    background: none;
-    border: none;
-    cursor: pointer;
-    color: var(--gray-400);
-    padding: 6px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    transition: color 0.15s, background 0.15s;
-  }
-  .btn-refresh:hover { color: var(--green); background: var(--green-light); }
+  .header{background:#fff;border-bottom:1px solid var(--gray-200);padding:1.25rem 1.5rem;position:sticky;top:0;z-index:20}
+  .header-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+  .header h1{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
+  .header h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
+  .btn-icon{background:none;border:none;cursor:pointer;color:var(--gray-400);padding:6px;border-radius:50%;display:flex;align-items:center;transition:color .15s,background .15s}
+  .btn-icon:hover{color:var(--green);background:var(--green-light)}
 
   /* Main */
-  .main {
-    max-width: 520px;
-    margin: 0 auto;
-    padding: 1.25rem 1rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
+  .main{max-width:520px;margin:0 auto;padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1rem}
 
   /* Card */
-  .card {
-    background: #fff;
-    border-radius: var(--radius);
-    border: 1px solid var(--gray-200);
-    padding: 1.25rem 1.5rem;
-  }
+  .card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem 1.5rem}
 
-  /* Progress card */
-  .progress-card { text-align: center; padding: 2rem 1.5rem 1.5rem; }
-  .names-label {
-    font-size: 13px;
-    color: var(--gray-400);
-    margin-bottom: 1.5rem;
-  }
-  .names-label strong { color: var(--gray-600); font-weight: 500; }
-
-  .circle-wrap {
-    width: 160px;
-    height: 160px;
-    margin: 0 auto 1.5rem;
-    position: relative;
-  }
-  .circle-svg { transform: rotate(-90deg); }
-  .circle-bg { fill: none; stroke: var(--gray-200); stroke-width: 10; }
-  .circle-prog {
-    fill: none;
-    stroke: var(--green);
-    stroke-width: 10;
-    stroke-linecap: round;
-    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-  }
-  .circle-text {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-  }
-  .circle-pct { font-size: 32px; font-weight: 600; color: var(--gray-900); line-height: 1; }
-  .circle-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
-
-  .amount-row {
-    display: grid;
-    grid-template-columns: 1fr 1px 1fr;
-    gap: 0;
-    background: var(--gray-100);
-    border-radius: var(--radius-sm);
-    overflow: hidden;
-  }
-  .amount-cell { padding: 0.75rem 1rem; text-align: center; }
-  .amount-divider { background: var(--gray-200); }
-  .amount-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
-  .amount-value { font-size: 18px; font-weight: 600; color: var(--gray-900); }
-  .amount-value.green { color: var(--green); }
-  .amount-value.red { color: #D85A30; }
+  /* Progress */
+  .progress-card{text-align:center;padding:2rem 1.5rem 1.5rem}
+  .names-label{font-size:13px;color:var(--gray-400);margin-bottom:1.5rem}
+  .names-label strong{color:var(--gray-600);font-weight:500}
+  .circle-wrap{width:160px;height:160px;margin:0 auto 1.5rem;position:relative}
+  .circle-svg{transform:rotate(-90deg)}
+  .circle-bg{fill:none;stroke:var(--gray-200);stroke-width:10}
+  .circle-prog{fill:none;stroke:var(--green);stroke-width:10;stroke-linecap:round;transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1)}
+  .circle-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);text-align:center}
+  .circle-pct{font-size:32px;font-weight:600;line-height:1}
+  .circle-sub{font-size:12px;color:var(--gray-400);margin-top:2px}
+  .amount-row{display:grid;grid-template-columns:1fr 1px 1fr;background:var(--gray-100);border-radius:var(--radius-sm);overflow:hidden}
+  .amount-cell{padding:.75rem 1rem;text-align:center}
+  .amount-divider{background:var(--gray-200)}
+  .amount-label{font-size:11px;color:var(--gray-400);text-transform:uppercase;letter-spacing:.05em;margin-bottom:2px}
+  .amount-value{font-size:18px;font-weight:600}
+  .amount-value.green{color:var(--green)}
+  .amount-value.red{color:var(--red)}
 
   /* Section label */
-  .section-label {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--gray-400);
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    margin-bottom: 1rem;
-  }
+  .section-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
 
   /* Form */
-  .form-group { margin-bottom: 1rem; }
-  .form-group:last-child { margin-bottom: 0; }
-  .form-label {
-    display: block;
-    font-size: 13px;
-    color: var(--gray-600);
-    margin-bottom: 5px;
-    font-weight: 500;
-  }
-  input[type=text], input[type=number], textarea {
-    width: 100%;
-    padding: 10px 12px;
-    border: 1px solid var(--gray-200);
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-family: 'Sarabun', sans-serif;
-    color: var(--gray-900);
-    background: #fff;
-    outline: none;
-    transition: border-color 0.15s;
-  }
-  input:focus, textarea:focus { border-color: var(--green); }
-  textarea { min-height: 72px; resize: vertical; line-height: 1.5; }
+  .form-group{margin-bottom:1rem}
+  .form-group:last-child{margin-bottom:0}
+  .form-label{display:block;font-size:13px;color:var(--gray-600);margin-bottom:5px;font-weight:500}
+  input[type=text],input[type=number],textarea{width:100%;padding:10px 12px;border:1px solid var(--gray-200);border-radius:var(--radius-sm);font-size:15px;font-family:'Sarabun',sans-serif;color:var(--gray-900);background:#fff;outline:none;transition:border-color .15s}
+  input:focus,textarea:focus{border-color:var(--green)}
+  textarea{min-height:72px;resize:vertical;line-height:1.5}
 
   /* Upload */
-  .upload-area {
-    border: 1.5px dashed var(--gray-200);
-    border-radius: var(--radius-sm);
-    padding: 1.25rem;
-    text-align: center;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .upload-area:hover { border-color: var(--green); background: var(--green-light); }
-  .upload-area.has-file { border-color: var(--green); background: var(--green-light); }
-  .upload-icon { font-size: 24px; margin-bottom: 4px; }
-  .upload-text { font-size: 13px; color: var(--gray-600); }
-  .upload-text.green { color: var(--green-dark); font-weight: 500; }
-  .upload-preview {
-    max-width: 100%;
-    max-height: 200px;
-    border-radius: var(--radius-sm);
-    margin-top: 10px;
-    display: none;
-  }
+  .upload-area{border:1.5px dashed var(--gray-200);border-radius:var(--radius-sm);padding:1.25rem;text-align:center;cursor:pointer;transition:all .15s}
+  .upload-area:hover,.upload-area.has-file{border-color:var(--green);background:var(--green-light)}
+  .upload-text{font-size:13px;color:var(--gray-600)}
+  .upload-text.green{color:var(--green-dark);font-weight:500}
+  .upload-preview{max-width:100%;max-height:200px;border-radius:var(--radius-sm);margin-top:10px;display:none}
+
+  /* Upload progress */
+  .upload-progress{margin-top:8px;display:none}
+  .upload-progress-bar{height:4px;background:var(--gray-200);border-radius:99px;overflow:hidden}
+  .upload-progress-fill{height:100%;background:var(--green);border-radius:99px;width:0%;transition:width .3s}
+  .upload-progress-text{font-size:11px;color:var(--green-dark);margin-top:4px}
 
   /* Button */
-  .btn {
-    width: 100%;
-    padding: 13px;
-    border: none;
-    border-radius: var(--radius-sm);
-    font-size: 15px;
-    font-weight: 600;
-    font-family: 'Sarabun', sans-serif;
-    cursor: pointer;
-    transition: all 0.15s;
-  }
-  .btn-primary {
-    background: var(--green);
-    color: #fff;
-  }
-  .btn-primary:hover { background: var(--green-dark); }
-  .btn-primary:active { transform: scale(0.98); }
-  .btn-primary:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; transform: none; }
+  .btn{width:100%;padding:13px;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:600;font-family:'Sarabun',sans-serif;cursor:pointer;transition:all .15s}
+  .btn-primary{background:var(--green);color:#fff}
+  .btn-primary:hover{background:var(--green-dark)}
+  .btn-primary:active{transform:scale(.98)}
+  .btn-primary:disabled{background:var(--gray-200);color:var(--gray-400);cursor:not-allowed;transform:none}
 
   /* History */
-  .history-item {
-    display: flex;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--gray-100);
-  }
-  .history-item:last-child { border-bottom: none; padding-bottom: 0; }
-  .history-dot {
-    width: 10px; height: 10px;
-    border-radius: 50%;
-    background: var(--green);
-    margin-top: 5px;
-    flex-shrink: 0;
-  }
-  .history-info { flex: 1; min-width: 0; }
-  .history-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-  .history-amount { font-size: 16px; font-weight: 600; color: var(--green-dark); }
-  .history-date { font-size: 12px; color: var(--gray-400); white-space: nowrap; }
-  .history-note { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
-  .history-slip {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    font-size: 12px;
-    color: var(--green);
-    margin-top: 4px;
-    text-decoration: none;
-    font-weight: 500;
-  }
-  .history-slip:hover { color: var(--green-dark); text-decoration: underline; }
+  .history-item{border-bottom:1px solid var(--gray-100)}
+  .history-item:last-child{border-bottom:none}
+  .history-summary{display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer;user-select:none}
+  .history-summary:hover .history-amount{color:var(--green)}
+  .history-dot{width:10px;height:10px;border-radius:50%;background:var(--green);flex-shrink:0}
+  .history-info{flex:1;min-width:0}
+  .history-top{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+  .history-amount{font-size:16px;font-weight:600;color:var(--green-dark);transition:color .15s}
+  .history-date{font-size:12px;color:var(--gray-400);white-space:nowrap}
+  .history-note-preview{font-size:13px;color:var(--gray-400);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .history-chevron{font-size:12px;color:var(--gray-400);flex-shrink:0;transition:transform .2s}
+  .history-chevron.open{transform:rotate(180deg)}
 
-  /* Empty state */
-  .empty { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 14px; }
+  /* History detail (expandable) */
+  .history-detail{display:none;padding:0 0 14px 22px;animation:slideDown .2s ease}
+  .history-detail.open{display:block}
+  @keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+  .detail-row{display:flex;gap:8px;font-size:13px;margin-bottom:8px;align-items:flex-start}
+  .detail-label{color:var(--gray-400);min-width:56px;flex-shrink:0}
+  .detail-value{color:var(--gray-900);line-height:1.4}
+  .slip-thumb{max-width:100%;max-height:220px;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--gray-200);display:block;cursor:pointer}
+  .slip-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--green);font-weight:500;text-decoration:none;margin-top:4px}
+  .slip-link:hover{color:var(--green-dark);text-decoration:underline}
+  .badge-slip{display:inline-block;background:var(--green-light);color:var(--green-dark);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500}
 
-  /* Loading */
-  .loading {
-    text-align: center;
-    padding: 2rem;
-    color: var(--gray-400);
-    font-size: 14px;
-  }
-  .spinner {
-    width: 24px; height: 24px;
-    border: 2px solid var(--gray-200);
-    border-top-color: var(--green);
-    border-radius: 50%;
-    animation: spin 0.7s linear infinite;
-    margin: 0 auto 8px;
-  }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  /* Loading / Empty */
+  .loading{text-align:center;padding:2rem;color:var(--gray-400);font-size:14px}
+  .spinner{width:24px;height:24px;border:2px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .empty{text-align:center;padding:2rem;color:var(--gray-400);font-size:14px}
 
   /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%) translateY(20px);
-    background: var(--gray-900);
-    color: #fff;
-    padding: 10px 20px;
-    border-radius: 99px;
-    font-size: 14px;
-    font-family: 'Sarabun', sans-serif;
-    opacity: 0;
-    transition: all 0.3s;
-    pointer-events: none;
-    z-index: 100;
-    white-space: nowrap;
-  }
-  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
-  .toast.error { background: #D85A30; }
+  .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:99px;font-size:14px;font-family:'Sarabun',sans-serif;opacity:0;transition:all .3s;pointer-events:none;z-index:100;white-space:nowrap}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  .toast.error{background:var(--red)}
 
-  /* Settings toggle */
-  .settings-toggle {
-    text-align: center;
-    margin-top: 0.5rem;
-  }
-  .btn-text {
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 13px;
-    color: var(--gray-400);
-    font-family: 'Sarabun', sans-serif;
-    padding: 4px 8px;
-    border-radius: 4px;
-    transition: color 0.15s;
-  }
-  .btn-text:hover { color: var(--gray-600); }
+  /* Settings */
+  .settings-toggle{text-align:center;margin-top:.5rem}
+  .btn-text{background:none;border:none;cursor:pointer;font-size:13px;color:var(--gray-400);font-family:'Sarabun',sans-serif;padding:4px 8px;border-radius:4px;transition:color .15s}
+  .btn-text:hover{color:var(--gray-600)}
+  .collapsible{display:none}
+  .collapsible.open{display:block}
 
-  .collapsible { display: none; }
-  .collapsible.open { display: block; }
+  /* Lightbox */
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius-sm)}
 </style>
 </head>
 <body>
 
 <header class="header">
   <div class="header-inner">
-    <h1>
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
-      </svg>
-      ติดตามการชำระหนี้
-    </h1>
-    <button class="btn-refresh" onclick="loadData()" title="รีเฟรช">
+    <h1><div class="dot"></div> ติดตามการชำระหนี้</h1>
+    <button class="btn-icon" onclick="loadData()" title="รีเฟรช" aria-label="รีเฟรชข้อมูล">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
       </svg>
@@ -333,8 +151,7 @@
       <svg class="circle-svg" width="160" height="160" viewBox="0 0 160 160">
         <circle class="circle-bg" cx="80" cy="80" r="70"/>
         <circle class="circle-prog" id="circle-prog" cx="80" cy="80" r="70"
-          stroke-dasharray="439.82"
-          stroke-dashoffset="439.82"/>
+          stroke-dasharray="439.82" stroke-dashoffset="439.82"/>
       </svg>
       <div class="circle-text">
         <div class="circle-pct" id="pct-text">0%</div>
@@ -359,7 +176,7 @@
     <div class="section-label">เพิ่มการชำระ</div>
     <div class="form-group">
       <label class="form-label">ยอดที่ชำระ (บาท)</label>
-      <input type="number" id="pay-amount" placeholder="เช่น 500" min="1" />
+      <input type="number" id="pay-amount" placeholder="เช่น 500" min="1"/>
     </div>
     <div class="form-group">
       <label class="form-label">โน้ต</label>
@@ -368,10 +185,14 @@
     <div class="form-group">
       <label class="form-label">แนบสลิป</label>
       <div class="upload-area" id="upload-area" onclick="document.getElementById('slip-input').click()">
-        <div class="upload-icon">📎</div>
+        <div style="font-size:24px;margin-bottom:4px">📎</div>
         <div class="upload-text" id="upload-text">กดเพื่อเลือกรูปสลิป</div>
-        <img id="upload-preview" class="upload-preview" alt="preview" />
-        <input type="file" id="slip-input" accept="image/*" style="display:none" onchange="handleFile(this)" />
+        <img id="upload-preview" class="upload-preview" alt="preview"/>
+        <input type="file" id="slip-input" accept="image/*" style="display:none" onchange="handleFile(this)"/>
+      </div>
+      <div class="upload-progress" id="upload-progress">
+        <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div>
+        <div class="upload-progress-text" id="upload-progress-text">กำลังอัปโหลดสลิป...</div>
       </div>
     </div>
     <button class="btn btn-primary" id="submit-btn" onclick="submitPayment()">บันทึกการชำระ</button>
@@ -385,7 +206,7 @@
     </div>
   </div>
 
-  <!-- Settings (collapsed) -->
+  <!-- Settings -->
   <div class="settings-toggle">
     <button class="btn-text" onclick="toggleSettings()">⚙️ ตั้งค่าวงเงิน</button>
   </div>
@@ -393,20 +214,25 @@
     <div class="section-label">ตั้งค่า</div>
     <div class="form-group">
       <label class="form-label">ยอดหนี้ทั้งหมด (บาท)</label>
-      <input type="number" id="cfg-total" placeholder="20000" />
+      <input type="number" id="cfg-total" placeholder="20000"/>
     </div>
     <div class="form-group">
       <label class="form-label">ชื่อเจ้าหนี้</label>
-      <input type="text" id="cfg-creditor" placeholder="ชื่อเพื่อน" />
+      <input type="text" id="cfg-creditor" placeholder="ชื่อเพื่อน"/>
     </div>
     <div class="form-group">
       <label class="form-label">ชื่อลูกหนี้</label>
-      <input type="text" id="cfg-debtor" placeholder="ชื่อเรา" />
+      <input type="text" id="cfg-debtor" placeholder="ชื่อเรา"/>
     </div>
     <button class="btn btn-primary" onclick="saveConfig()">บันทึกการตั้งค่า</button>
   </div>
 
 </main>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <img id="lightbox-img" src="" alt="สลิป"/>
+</div>
 
 <div class="toast" id="toast"></div>
 
@@ -414,97 +240,160 @@
 const API = 'https://script.google.com/macros/s/AKfycbz8MtMpZHMlOO1DPGMmjI1UHTFdqc82CiYtHjxjfpqTfpTc8KxTprR7No9HaqMoYHHayw/exec';
 
 let slipBase64 = null;
-let currentConfig = {};
+let slipMime = 'image/jpeg';
+let uploadedSlipUrl = '';
 
-// ─── Load ───────────────────────────────────────────────
+// ─── Load ────────────────────────────────────────────────────
 async function loadData() {
   try {
     const res = await fetch(API + '?action=getAll');
     const data = await res.json();
-    currentConfig = data.config || {};
     renderProgress(data.config, data.payments);
     renderHistory(data.payments);
     prefillSettings(data.config);
   } catch(e) {
-    showToast('โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่', true);
+    showToast('โหลดข้อมูลไม่สำเร็จ', true);
     document.getElementById('history-container').innerHTML = '<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>';
   }
 }
 
-// ─── Render Progress ─────────────────────────────────────
+// ─── Progress ────────────────────────────────────────────────
 function renderProgress(config, payments) {
   const total = parseFloat(config?.total_debt) || 20000;
-  const paid = (payments || []).reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+  const paid = (payments||[]).reduce((s,p) => s + parseFloat(p.amount||0), 0);
   const remain = Math.max(0, total - paid);
-  const pct = total > 0 ? Math.min(100, Math.round(paid / total * 100)) : 0;
-
-  const circumference = 2 * Math.PI * 70; // 439.82
-  const offset = circumference - (pct / 100) * circumference;
-  document.getElementById('circle-prog').style.strokeDashoffset = offset;
+  const pct = total > 0 ? Math.min(100, Math.round(paid/total*100)) : 0;
+  const C = 2 * Math.PI * 70;
+  document.getElementById('circle-prog').style.strokeDashoffset = C - (pct/100)*C;
   document.getElementById('pct-text').textContent = pct + '%';
   document.getElementById('paid-amount').textContent = '฿' + paid.toLocaleString('th-TH');
   document.getElementById('remain-amount').textContent = '฿' + remain.toLocaleString('th-TH');
-
   const creditor = config?.creditor_name || 'เจ้าหนี้';
   const debtor = config?.debtor_name || 'ลูกหนี้';
   document.getElementById('names-label').innerHTML =
     `<strong>${debtor}</strong> ยืม <strong>${creditor}</strong> ทั้งหมด ฿${total.toLocaleString('th-TH')}`;
 }
 
-// ─── Render History ──────────────────────────────────────
+// ─── History ─────────────────────────────────────────────────
 function renderHistory(payments) {
   const el = document.getElementById('history-container');
   if (!payments || !payments.length) {
     el.innerHTML = '<div class="empty">ยังไม่มีการชำระ</div>';
     return;
   }
-  const rows = [...payments].reverse().map(p => {
+  el.innerHTML = [...payments].reverse().map((p, i) => {
+    const id = 'h' + i;
     const date = formatDate(p.date);
-    const slipLink = p.slip_url
-      ? `<a href="${p.slip_url}" target="_blank" class="history-slip">📎 ดูสลิป</a>`
+    const hasSlip = !!p.slip_url;
+    const notePreview = p.note ? `<div class="history-note-preview">${p.note}</div>` : '';
+    const slipBadge = hasSlip ? ' <span class="badge-slip">📎 สลิป</span>' : '';
+
+    const detailNote = p.note
+      ? `<div class="detail-row"><span class="detail-label">โน้ต</span><span class="detail-value">${p.note}</span></div>`
       : '';
-    const note = p.note ? `<div class="history-note">${p.note}</div>` : '';
+    const detailSlip = hasSlip
+      ? `<div class="detail-row" style="flex-direction:column">
+          <img src="${p.slip_url}" class="slip-thumb" alt="สลิป" onclick="openLightbox('${p.slip_url}')" onerror="this.style.display='none'"/>
+          <a href="${p.slip_url}" target="_blank" class="slip-link">🔗 เปิดสลิปในแท็บใหม่</a>
+        </div>`
+      : '<div class="detail-row"><span class="detail-label">สลิป</span><span class="detail-value" style="color:var(--gray-400)">ไม่มีสลิป</span></div>';
+
     return `
-      <div class="history-item">
+    <div class="history-item">
+      <div class="history-summary" onclick="toggleDetail('${id}')">
         <div class="history-dot"></div>
         <div class="history-info">
           <div class="history-top">
-            <span class="history-amount">+฿${parseFloat(p.amount).toLocaleString('th-TH')}</span>
+            <span class="history-amount">+฿${parseFloat(p.amount).toLocaleString('th-TH')}${slipBadge}</span>
             <span class="history-date">${date}</span>
           </div>
-          ${note}${slipLink}
+          ${notePreview}
         </div>
-      </div>`;
+        <div class="history-chevron" id="chev-${id}">▼</div>
+      </div>
+      <div class="history-detail" id="${id}">
+        <div class="detail-row">
+          <span class="detail-label">วันที่</span>
+          <span class="detail-value">${date}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">ยอด</span>
+          <span class="detail-value" style="font-weight:600;color:var(--green-dark)">฿${parseFloat(p.amount).toLocaleString('th-TH')}</span>
+        </div>
+        ${detailNote}
+        ${detailSlip}
+      </div>
+    </div>`;
   }).join('');
-  el.innerHTML = rows;
 }
 
-function formatDate(iso) {
-  if (!iso) return '';
-  try {
-    const d = new Date(iso);
-    return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
-  } catch(e) { return iso; }
+function toggleDetail(id) {
+  const detail = document.getElementById(id);
+  const chev = document.getElementById('chev-' + id);
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  chev.classList.toggle('open', !isOpen);
 }
 
-// ─── File Upload ─────────────────────────────────────────
+// ─── Lightbox ────────────────────────────────────────────────
+function openLightbox(url) {
+  document.getElementById('lightbox-img').src = url;
+  document.getElementById('lightbox').classList.add('open');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+// ─── File Handling ───────────────────────────────────────────
 function handleFile(input) {
   const file = input.files[0];
   if (!file) return;
   const reader = new FileReader();
   reader.onload = e => {
-    slipBase64 = e.target.result;
+    // แยก base64 data และ mime
+    const result = e.target.result;
+    const parts = result.split(',');
+    const mimeMatch = parts[0].match(/:(.*?);/);
+    slipMime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
+    slipBase64 = parts[1]; // เอาเฉพาะ base64 ไม่มี prefix
+    uploadedSlipUrl = ''; // reset
+
     document.getElementById('upload-text').textContent = '✓ ' + file.name;
     document.getElementById('upload-text').className = 'upload-text green';
     document.getElementById('upload-area').classList.add('has-file');
     const preview = document.getElementById('upload-preview');
-    preview.src = slipBase64;
+    preview.src = result;
     preview.style.display = 'block';
   };
   reader.readAsDataURL(file);
 }
 
-// ─── Submit Payment ──────────────────────────────────────
+// อัปโหลดสลิปก่อน แล้วค่อย save payment
+async function uploadSlipToServer() {
+  if (!slipBase64) return '';
+  try {
+    document.getElementById('upload-progress').style.display = 'block';
+    document.getElementById('upload-progress-fill').style.width = '40%';
+    document.getElementById('upload-progress-text').textContent = 'กำลังอัปโหลดสลิป...';
+
+    // ส่งผ่าน GET เพื่อหลีกเลี่ยงปัญหา CORS/no-cors ของ Apps Script
+    const url = API + '?action=uploadSlip&mime=' + encodeURIComponent(slipMime) + '&data=' + encodeURIComponent(slipBase64);
+    const res = await fetch(url);
+    const data = await res.json();
+
+    document.getElementById('upload-progress-fill').style.width = '100%';
+    document.getElementById('upload-progress-text').textContent = 'อัปโหลดสลิปสำเร็จ ✓';
+    setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; }, 1500);
+
+    return data.url || '';
+  } catch(e) {
+    document.getElementById('upload-progress').style.display = 'none';
+    console.error('upload slip failed', e);
+    return '';
+  }
+}
+
+// ─── Submit Payment ──────────────────────────────────────────
 async function submitPayment() {
   const amtEl = document.getElementById('pay-amount');
   const amt = parseFloat(amtEl.value);
@@ -515,17 +404,22 @@ async function submitPayment() {
   btn.textContent = 'กำลังบันทึก...';
 
   try {
-    const body = {
-      action: 'addPayment',
-      amount: amt,
-      note: document.getElementById('pay-note').value.trim(),
-      slip_base64: slipBase64 || ''
-    };
-    const res = await fetch(API, {
-      method: 'POST',
-      body: JSON.stringify(body)
-    });
+    // 1. อัปโหลดสลิปก่อน (ถ้ามี)
+    let slipUrl = '';
+    if (slipBase64) {
+      slipUrl = await uploadSlipToServer();
+    }
+
+    // 2. save payment พร้อม slip_url
+    const note = document.getElementById('pay-note').value.trim();
+    const saveUrl = API + '?action=addPayment'
+      + '&amount=' + amt
+      + '&note=' + encodeURIComponent(note)
+      + '&slip_url=' + encodeURIComponent(slipUrl);
+
+    const res = await fetch(saveUrl);
     const data = await res.json();
+
     if (data.ok) {
       showToast('บันทึกการชำระแล้ว ✓');
       amtEl.value = '';
@@ -536,7 +430,7 @@ async function submitPayment() {
       showToast(data.error || 'เกิดข้อผิดพลาด', true);
     }
   } catch(e) {
-    showToast('ส่งข้อมูลไม่สำเร็จ', true);
+    showToast('บันทึกไม่สำเร็จ: ' + e.message, true);
   }
 
   btn.disabled = false;
@@ -545,6 +439,7 @@ async function submitPayment() {
 
 function resetUpload() {
   slipBase64 = null;
+  uploadedSlipUrl = '';
   document.getElementById('slip-input').value = '';
   document.getElementById('upload-text').textContent = 'กดเพื่อเลือกรูปสลิป';
   document.getElementById('upload-text').className = 'upload-text';
@@ -552,7 +447,7 @@ function resetUpload() {
   document.getElementById('upload-preview').style.display = 'none';
 }
 
-// ─── Settings ────────────────────────────────────────────
+// ─── Settings ────────────────────────────────────────────────
 function prefillSettings(config) {
   if (!config) return;
   document.getElementById('cfg-total').value = config.total_debt || '';
@@ -561,14 +456,12 @@ function prefillSettings(config) {
 }
 
 async function saveConfig() {
-  const body = {
-    action: 'updateConfig',
-    total_debt: document.getElementById('cfg-total').value,
-    creditor_name: document.getElementById('cfg-creditor').value,
-    debtor_name: document.getElementById('cfg-debtor').value
-  };
+  const url = API + '?action=updateConfig'
+    + '&total_debt=' + document.getElementById('cfg-total').value
+    + '&creditor_name=' + encodeURIComponent(document.getElementById('cfg-creditor').value)
+    + '&debtor_name=' + encodeURIComponent(document.getElementById('cfg-debtor').value);
   try {
-    await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+    await fetch(url);
     showToast('บันทึกการตั้งค่าแล้ว ✓');
     await loadData();
   } catch(e) {
@@ -580,7 +473,15 @@ function toggleSettings() {
   document.getElementById('settings-panel').classList.toggle('open');
 }
 
-// ─── Toast ───────────────────────────────────────────────
+// ─── Helpers ─────────────────────────────────────────────────
+function formatDate(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('th-TH', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+  } catch(e) { return iso; }
+}
+
 function showToast(msg, isError) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -588,7 +489,6 @@ function showToast(msg, isError) {
   setTimeout(() => t.className = 'toast', 2800);
 }
 
-// ─── Init ─────────────────────────────────────────────────
 loadData();
 </script>
 </body>
