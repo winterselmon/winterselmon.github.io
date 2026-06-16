@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ติดตามการชำระหนี้</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap');
+
+  :root {
+    --green: #1D9E75;
+    --green-light: #E1F5EE;
+    --green-dark: #0F6E56;
+    --gray-100: #F6F6F4;
+    --gray-200: #ECEAE5;
+    --gray-400: #B4B2A9;
+    --gray-600: #5F5E5A;
+    --gray-900: #2C2C2A;
+    --radius: 14px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Sarabun', sans-serif;
+    background: var(--gray-100);
+    color: var(--gray-900);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+  }
+
+  /* Header */
+  .header {
+    background: #fff;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 1.25rem 1.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .header-inner {
+    max-width: 520px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .header h1 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header h1 svg { color: var(--green); }
+  .btn-refresh {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--gray-400);
+    padding: 6px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    transition: color 0.15s, background 0.15s;
+  }
+  .btn-refresh:hover { color: var(--green); background: var(--green-light); }
+
+  /* Main */
+  .main {
+    max-width: 520px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* Card */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 1px solid var(--gray-200);
+    padding: 1.25rem 1.5rem;
+  }
+
+  /* Progress card */
+  .progress-card { text-align: center; padding: 2rem 1.5rem 1.5rem; }
+  .names-label {
+    font-size: 13px;
+    color: var(--gray-400);
+    margin-bottom: 1.5rem;
+  }
+  .names-label strong { color: var(--gray-600); font-weight: 500; }
+
+  .circle-wrap {
+    width: 160px;
+    height: 160px;
+    margin: 0 auto 1.5rem;
+    position: relative;
+  }
+  .circle-svg { transform: rotate(-90deg); }
+  .circle-bg { fill: none; stroke: var(--gray-200); stroke-width: 10; }
+  .circle-prog {
+    fill: none;
+    stroke: var(--green);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+  .circle-text {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+  }
+  .circle-pct { font-size: 32px; font-weight: 600; color: var(--gray-900); line-height: 1; }
+  .circle-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+  .amount-row {
+    display: grid;
+    grid-template-columns: 1fr 1px 1fr;
+    gap: 0;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+  }
+  .amount-cell { padding: 0.75rem 1rem; text-align: center; }
+  .amount-divider { background: var(--gray-200); }
+  .amount-label { font-size: 11px; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 2px; }
+  .amount-value { font-size: 18px; font-weight: 600; color: var(--gray-900); }
+  .amount-value.green { color: var(--green); }
+  .amount-value.red { color: #D85A30; }
+
+  /* Section label */
+  .section-label {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--gray-400);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 1rem;
+  }
+
+  /* Form */
+  .form-group { margin-bottom: 1rem; }
+  .form-group:last-child { margin-bottom: 0; }
+  .form-label {
+    display: block;
+    font-size: 13px;
+    color: var(--gray-600);
+    margin-bottom: 5px;
+    font-weight: 500;
+  }
+  input[type=text], input[type=number], textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-family: 'Sarabun', sans-serif;
+    color: var(--gray-900);
+    background: #fff;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input:focus, textarea:focus { border-color: var(--green); }
+  textarea { min-height: 72px; resize: vertical; line-height: 1.5; }
+
+  /* Upload */
+  .upload-area {
+    border: 1.5px dashed var(--gray-200);
+    border-radius: var(--radius-sm);
+    padding: 1.25rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .upload-area:hover { border-color: var(--green); background: var(--green-light); }
+  .upload-area.has-file { border-color: var(--green); background: var(--green-light); }
+  .upload-icon { font-size: 24px; margin-bottom: 4px; }
+  .upload-text { font-size: 13px; color: var(--gray-600); }
+  .upload-text.green { color: var(--green-dark); font-weight: 500; }
+  .upload-preview {
+    max-width: 100%;
+    max-height: 200px;
+    border-radius: var(--radius-sm);
+    margin-top: 10px;
+    display: none;
+  }
+
+  /* Button */
+  .btn {
+    width: 100%;
+    padding: 13px;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'Sarabun', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+  }
+  .btn-primary:hover { background: var(--green-dark); }
+  .btn-primary:active { transform: scale(0.98); }
+  .btn-primary:disabled { background: var(--gray-200); color: var(--gray-400); cursor: not-allowed; transform: none; }
+
+  /* History */
+  .history-item {
+    display: flex;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .history-item:last-child { border-bottom: none; padding-bottom: 0; }
+  .history-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--green);
+    margin-top: 5px;
+    flex-shrink: 0;
+  }
+  .history-info { flex: 1; min-width: 0; }
+  .history-top { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+  .history-amount { font-size: 16px; font-weight: 600; color: var(--green-dark); }
+  .history-date { font-size: 12px; color: var(--gray-400); white-space: nowrap; }
+  .history-note { font-size: 13px; color: var(--gray-600); margin-top: 2px; }
+  .history-slip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--green);
+    margin-top: 4px;
+    text-decoration: none;
+    font-weight: 500;
+  }
+  .history-slip:hover { color: var(--green-dark); text-decoration: underline; }
+
+  /* Empty state */
+  .empty { text-align: center; padding: 2rem; color: var(--gray-400); font-size: 14px; }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 2rem;
+    color: var(--gray-400);
+    font-size: 14px;
+  }
+  .spinner {
+    width: 24px; height: 24px;
+    border: 2px solid var(--gray-200);
+    border-top-color: var(--green);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto 8px;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 1.5rem;
+    left: 50%;
+    transform: translateX(-50%) translateY(20px);
+    background: var(--gray-900);
+    color: #fff;
+    padding: 10px 20px;
+    border-radius: 99px;
+    font-size: 14px;
+    font-family: 'Sarabun', sans-serif;
+    opacity: 0;
+    transition: all 0.3s;
+    pointer-events: none;
+    z-index: 100;
+    white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+  .toast.error { background: #D85A30; }
+
+  /* Settings toggle */
+  .settings-toggle {
+    text-align: center;
+    margin-top: 0.5rem;
+  }
+  .btn-text {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--gray-400);
+    font-family: 'Sarabun', sans-serif;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.15s;
+  }
+  .btn-text:hover { color: var(--gray-600); }
+
+  .collapsible { display: none; }
+  .collapsible.open { display: block; }
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <h1>
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>
+      </svg>
+      ติดตามการชำระหนี้
+    </h1>
+    <button class="btn-refresh" onclick="loadData()" title="รีเฟรช">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<main class="main">
+
+  <!-- Progress -->
+  <div class="card progress-card">
+    <div class="names-label" id="names-label">กำลังโหลด...</div>
+    <div class="circle-wrap">
+      <svg class="circle-svg" width="160" height="160" viewBox="0 0 160 160">
+        <circle class="circle-bg" cx="80" cy="80" r="70"/>
+        <circle class="circle-prog" id="circle-prog" cx="80" cy="80" r="70"
+          stroke-dasharray="439.82"
+          stroke-dashoffset="439.82"/>
+      </svg>
+      <div class="circle-text">
+        <div class="circle-pct" id="pct-text">0%</div>
+        <div class="circle-sub">ชำระแล้ว</div>
+      </div>
+    </div>
+    <div class="amount-row">
+      <div class="amount-cell">
+        <div class="amount-label">ชำระแล้ว</div>
+        <div class="amount-value green" id="paid-amount">฿0</div>
+      </div>
+      <div class="amount-divider"></div>
+      <div class="amount-cell">
+        <div class="amount-label">คงเหลือ</div>
+        <div class="amount-value red" id="remain-amount">฿0</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Payment -->
+  <div class="card">
+    <div class="section-label">เพิ่มการชำระ</div>
+    <div class="form-group">
+      <label class="form-label">ยอดที่ชำระ (บาท)</label>
+      <input type="number" id="pay-amount" placeholder="เช่น 500" min="1" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">โน้ต</label>
+      <textarea id="pay-note" placeholder="เช่น โอนผ่าน PromptPay"></textarea>
+    </div>
+    <div class="form-group">
+      <label class="form-label">แนบสลิป</label>
+      <div class="upload-area" id="upload-area" onclick="document.getElementById('slip-input').click()">
+        <div class="upload-icon">📎</div>
+        <div class="upload-text" id="upload-text">กดเพื่อเลือกรูปสลิป</div>
+        <img id="upload-preview" class="upload-preview" alt="preview" />
+        <input type="file" id="slip-input" accept="image/*" style="display:none" onchange="handleFile(this)" />
+      </div>
+    </div>
+    <button class="btn btn-primary" id="submit-btn" onclick="submitPayment()">บันทึกการชำระ</button>
+  </div>
+
+  <!-- History -->
+  <div class="card">
+    <div class="section-label">ประวัติการชำระ</div>
+    <div id="history-container">
+      <div class="loading"><div class="spinner"></div>กำลังโหลด...</div>
+    </div>
+  </div>
+
+  <!-- Settings (collapsed) -->
+  <div class="settings-toggle">
+    <button class="btn-text" onclick="toggleSettings()">⚙️ ตั้งค่าวงเงิน</button>
+  </div>
+  <div class="card collapsible" id="settings-panel">
+    <div class="section-label">ตั้งค่า</div>
+    <div class="form-group">
+      <label class="form-label">ยอดหนี้ทั้งหมด (บาท)</label>
+      <input type="number" id="cfg-total" placeholder="20000" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">ชื่อเจ้าหนี้</label>
+      <input type="text" id="cfg-creditor" placeholder="ชื่อเพื่อน" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">ชื่อลูกหนี้</label>
+      <input type="text" id="cfg-debtor" placeholder="ชื่อเรา" />
+    </div>
+    <button class="btn btn-primary" onclick="saveConfig()">บันทึกการตั้งค่า</button>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://script.google.com/macros/s/AKfycbz8MtMpZHMlOO1DPGMmjI1UHTFdqc82CiYtHjxjfpqTfpTc8KxTprR7No9HaqMoYHHayw/exec';
+
+let slipBase64 = null;
+let currentConfig = {};
+
+// ─── Load ───────────────────────────────────────────────
+async function loadData() {
+  try {
+    const res = await fetch(API + '?action=getAll');
+    const data = await res.json();
+    currentConfig = data.config || {};
+    renderProgress(data.config, data.payments);
+    renderHistory(data.payments);
+    prefillSettings(data.config);
+  } catch(e) {
+    showToast('โหลดข้อมูลไม่สำเร็จ กรุณาลองใหม่', true);
+    document.getElementById('history-container').innerHTML = '<div class="empty">โหลดข้อมูลไม่สำเร็จ</div>';
+  }
+}
+
+// ─── Render Progress ─────────────────────────────────────
+function renderProgress(config, payments) {
+  const total = parseFloat(config?.total_debt) || 20000;
+  const paid = (payments || []).reduce((s, p) => s + parseFloat(p.amount || 0), 0);
+  const remain = Math.max(0, total - paid);
+  const pct = total > 0 ? Math.min(100, Math.round(paid / total * 100)) : 0;
+
+  const circumference = 2 * Math.PI * 70; // 439.82
+  const offset = circumference - (pct / 100) * circumference;
+  document.getElementById('circle-prog').style.strokeDashoffset = offset;
+  document.getElementById('pct-text').textContent = pct + '%';
+  document.getElementById('paid-amount').textContent = '฿' + paid.toLocaleString('th-TH');
+  document.getElementById('remain-amount').textContent = '฿' + remain.toLocaleString('th-TH');
+
+  const creditor = config?.creditor_name || 'เจ้าหนี้';
+  const debtor = config?.debtor_name || 'ลูกหนี้';
+  document.getElementById('names-label').innerHTML =
+    `<strong>${debtor}</strong> ยืม <strong>${creditor}</strong> ทั้งหมด ฿${total.toLocaleString('th-TH')}`;
+}
+
+// ─── Render History ──────────────────────────────────────
+function renderHistory(payments) {
+  const el = document.getElementById('history-container');
+  if (!payments || !payments.length) {
+    el.innerHTML = '<div class="empty">ยังไม่มีการชำระ</div>';
+    return;
+  }
+  const rows = [...payments].reverse().map(p => {
+    const date = formatDate(p.date);
+    const slipLink = p.slip_url
+      ? `<a href="${p.slip_url}" target="_blank" class="history-slip">📎 ดูสลิป</a>`
+      : '';
+    const note = p.note ? `<div class="history-note">${p.note}</div>` : '';
+    return `
+      <div class="history-item">
+        <div class="history-dot"></div>
+        <div class="history-info">
+          <div class="history-top">
+            <span class="history-amount">+฿${parseFloat(p.amount).toLocaleString('th-TH')}</span>
+            <span class="history-date">${date}</span>
+          </div>
+          ${note}${slipLink}
+        </div>
+      </div>`;
+  }).join('');
+  el.innerHTML = rows;
+}
+
+function formatDate(iso) {
+  if (!iso) return '';
+  try {
+    const d = new Date(iso);
+    return d.toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+  } catch(e) { return iso; }
+}
+
+// ─── File Upload ─────────────────────────────────────────
+function handleFile(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    slipBase64 = e.target.result;
+    document.getElementById('upload-text').textContent = '✓ ' + file.name;
+    document.getElementById('upload-text').className = 'upload-text green';
+    document.getElementById('upload-area').classList.add('has-file');
+    const preview = document.getElementById('upload-preview');
+    preview.src = slipBase64;
+    preview.style.display = 'block';
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─── Submit Payment ──────────────────────────────────────
+async function submitPayment() {
+  const amtEl = document.getElementById('pay-amount');
+  const amt = parseFloat(amtEl.value);
+  if (!amt || amt <= 0) { showToast('กรุณาระบุยอดที่ชำระ', true); return; }
+
+  const btn = document.getElementById('submit-btn');
+  btn.disabled = true;
+  btn.textContent = 'กำลังบันทึก...';
+
+  try {
+    const body = {
+      action: 'addPayment',
+      amount: amt,
+      note: document.getElementById('pay-note').value.trim(),
+      slip_base64: slipBase64 || ''
+    };
+    const res = await fetch(API, {
+      method: 'POST',
+      body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    if (data.ok) {
+      showToast('บันทึกการชำระแล้ว ✓');
+      amtEl.value = '';
+      document.getElementById('pay-note').value = '';
+      resetUpload();
+      await loadData();
+    } else {
+      showToast(data.error || 'เกิดข้อผิดพลาด', true);
+    }
+  } catch(e) {
+    showToast('ส่งข้อมูลไม่สำเร็จ', true);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'บันทึกการชำระ';
+}
+
+function resetUpload() {
+  slipBase64 = null;
+  document.getElementById('slip-input').value = '';
+  document.getElementById('upload-text').textContent = 'กดเพื่อเลือกรูปสลิป';
+  document.getElementById('upload-text').className = 'upload-text';
+  document.getElementById('upload-area').classList.remove('has-file');
+  document.getElementById('upload-preview').style.display = 'none';
+}
+
+// ─── Settings ────────────────────────────────────────────
+function prefillSettings(config) {
+  if (!config) return;
+  document.getElementById('cfg-total').value = config.total_debt || '';
+  document.getElementById('cfg-creditor').value = config.creditor_name || '';
+  document.getElementById('cfg-debtor').value = config.debtor_name || '';
+}
+
+async function saveConfig() {
+  const body = {
+    action: 'updateConfig',
+    total_debt: document.getElementById('cfg-total').value,
+    creditor_name: document.getElementById('cfg-creditor').value,
+    debtor_name: document.getElementById('cfg-debtor').value
+  };
+  try {
+    await fetch(API, { method: 'POST', body: JSON.stringify(body) });
+    showToast('บันทึกการตั้งค่าแล้ว ✓');
+    await loadData();
+  } catch(e) {
+    showToast('บันทึกไม่สำเร็จ', true);
+  }
+}
+
+function toggleSettings() {
+  document.getElementById('settings-panel').classList.toggle('open');
+}
+
+// ─── Toast ───────────────────────────────────────────────
+function showToast(msg, isError) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (isError ? ' error' : '') + ' show';
+  setTimeout(() => t.className = 'toast', 2800);
+}
+
+// ─── Init ─────────────────────────────────────────────────
+loadData();
+</script>
+</body>
+</html>
