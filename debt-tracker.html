@@ -4,29 +4,42 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ติดตามการชำระหนี้</title>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "AIzaSyBN3ocJS0tZycwYw1NGakmjeBas4Fn4syk",
+    authDomain: "dept-tracker-dbf13.firebaseapp.com",
+    projectId: "dept-tracker-dbf13",
+    storageBucket: "dept-tracker-dbf13.firebasestorage.app",
+    messagingSenderId: "396564498665",
+    appId: "1:396564498665:web:da925bd5b6fca629824878"
+  };
+  firebase.initializeApp(firebaseConfig);
+  const storage = firebase.storage();
+</script>
+
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600&display=swap');
   :root {
     --green:#1D9E75; --green-light:#E1F5EE; --green-dark:#0F6E56;
-    --gray-50:#FAFAF8; --gray-100:#F6F6F4; --gray-200:#ECEAE5;
+    --gray-100:#F6F6F4; --gray-200:#ECEAE5;
     --gray-400:#B4B2A9; --gray-600:#5F5E5A; --gray-900:#2C2C2A;
     --red:#D85A30; --radius:14px; --radius-sm:8px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   body{font-family:'Sarabun',sans-serif;background:var(--gray-100);color:var(--gray-900);min-height:100vh;padding-bottom:3rem}
 
-  /* Header */
   .header{background:#fff;border-bottom:1px solid var(--gray-200);padding:1.25rem 1.5rem;position:sticky;top:0;z-index:20}
   .header-inner{max-width:520px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
   .header h1{font-size:16px;font-weight:600;display:flex;align-items:center;gap:8px}
-  .header h1 .dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
+  .dot{width:10px;height:10px;border-radius:50%;background:var(--green)}
   .btn-icon{background:none;border:none;cursor:pointer;color:var(--gray-400);padding:6px;border-radius:50%;display:flex;align-items:center;transition:color .15s,background .15s}
   .btn-icon:hover{color:var(--green);background:var(--green-light)}
 
-  /* Main */
   .main{max-width:520px;margin:0 auto;padding:1.25rem 1rem;display:flex;flex-direction:column;gap:1rem}
-
-  /* Card */
   .card{background:#fff;border-radius:var(--radius);border:1px solid var(--gray-200);padding:1.25rem 1.5rem}
 
   /* Progress */
@@ -48,7 +61,6 @@
   .amount-value.green{color:var(--green)}
   .amount-value.red{color:var(--red)}
 
-  /* Section label */
   .section-label{font-size:11px;font-weight:600;color:var(--gray-400);text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem}
 
   /* Form */
@@ -92,8 +104,6 @@
   .history-note-preview{font-size:13px;color:var(--gray-400);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .history-chevron{font-size:12px;color:var(--gray-400);flex-shrink:0;transition:transform .2s}
   .history-chevron.open{transform:rotate(180deg)}
-
-  /* History detail (expandable) */
   .history-detail{display:none;padding:0 0 14px 22px;animation:slideDown .2s ease}
   .history-detail.open{display:block}
   @keyframes slideDown{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
@@ -103,20 +113,17 @@
   .slip-thumb{max-width:100%;max-height:220px;border-radius:var(--radius-sm);margin-top:8px;border:1px solid var(--gray-200);display:block;cursor:pointer}
   .slip-link{display:inline-flex;align-items:center;gap:4px;font-size:12px;color:var(--green);font-weight:500;text-decoration:none;margin-top:4px}
   .slip-link:hover{color:var(--green-dark);text-decoration:underline}
-  .badge-slip{display:inline-block;background:var(--green-light);color:var(--green-dark);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500}
+  .badge-slip{display:inline-block;background:var(--green-light);color:var(--green-dark);font-size:11px;padding:2px 8px;border-radius:99px;font-weight:500;margin-left:4px}
 
-  /* Loading / Empty */
   .loading{text-align:center;padding:2rem;color:var(--gray-400);font-size:14px}
   .spinner{width:24px;height:24px;border:2px solid var(--gray-200);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 8px}
   @keyframes spin{to{transform:rotate(360deg)}}
   .empty{text-align:center;padding:2rem;color:var(--gray-400);font-size:14px}
 
-  /* Toast */
   .toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(20px);background:var(--gray-900);color:#fff;padding:10px 20px;border-radius:99px;font-size:14px;font-family:'Sarabun',sans-serif;opacity:0;transition:all .3s;pointer-events:none;z-index:100;white-space:nowrap}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   .toast.error{background:var(--red)}
 
-  /* Settings */
   .settings-toggle{text-align:center;margin-top:.5rem}
   .btn-text{background:none;border:none;cursor:pointer;font-size:13px;color:var(--gray-400);font-family:'Sarabun',sans-serif;padding:4px 8px;border-radius:4px;transition:color .15s}
   .btn-text:hover{color:var(--gray-600)}
@@ -124,9 +131,10 @@
   .collapsible.open{display:block}
 
   /* Lightbox */
-  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:center;justify-content:center;cursor:zoom-out}
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:200;align-items:center;justify-content:center;cursor:zoom-out;flex-direction:column;gap:12px}
   .lightbox.open{display:flex}
-  .lightbox img{max-width:90vw;max-height:90vh;border-radius:var(--radius-sm)}
+  .lightbox img{max-width:92vw;max-height:85vh;border-radius:var(--radius-sm);box-shadow:0 8px 40px rgba(0,0,0,.4)}
+  .lightbox-close{color:rgba(255,255,255,.6);font-size:13px}
 </style>
 </head>
 <body>
@@ -134,7 +142,7 @@
 <header class="header">
   <div class="header-inner">
     <h1><div class="dot"></div> ติดตามการชำระหนี้</h1>
-    <button class="btn-icon" onclick="loadData()" title="รีเฟรช" aria-label="รีเฟรชข้อมูล">
+    <button class="btn-icon" onclick="loadData()" title="รีเฟรช">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/>
       </svg>
@@ -191,8 +199,10 @@
         <input type="file" id="slip-input" accept="image/*" style="display:none" onchange="handleFile(this)"/>
       </div>
       <div class="upload-progress" id="upload-progress">
-        <div class="upload-progress-bar"><div class="upload-progress-fill" id="upload-progress-fill"></div></div>
-        <div class="upload-progress-text" id="upload-progress-text">กำลังอัปโหลดสลิป...</div>
+        <div class="upload-progress-bar">
+          <div class="upload-progress-fill" id="upload-progress-fill"></div>
+        </div>
+        <div class="upload-progress-text" id="upload-progress-text">กำลังอัปโหลด...</div>
       </div>
     </div>
     <button class="btn btn-primary" id="submit-btn" onclick="submitPayment()">บันทึกการชำระ</button>
@@ -232,18 +242,63 @@
 <!-- Lightbox -->
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="สลิป"/>
+  <div class="lightbox-close">แตะเพื่อปิด</div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
+// ─── Config ──────────────────────────────────────────────────
 const API = 'https://script.google.com/macros/s/AKfycbz8MtMpZHMlOO1DPGMmjI1UHTFdqc82CiYtHjxjfpqTfpTc8KxTprR7No9HaqMoYHHayw/exec';
 
-let slipBase64 = null;
-let slipMime = 'image/jpeg';
-let uploadedSlipUrl = '';
+// ─── State ───────────────────────────────────────────────────
+let selectedFile = null; // เก็บ File object จริงๆ ไว้ upload ไป Firebase
 
-// ─── Load ────────────────────────────────────────────────────
+// ─── Firebase Upload ─────────────────────────────────────────
+async function uploadSlipToFirebase(file) {
+  return new Promise((resolve, reject) => {
+    // สร้าง path: slips/YYYY-MM-DD_HH-mm-ss_filename
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+    const path = `slips/${timestamp}_${safeName}`;
+
+    const ref = storage.ref(path);
+    const uploadTask = ref.put(file);
+
+    uploadTask.on('state_changed',
+      // Progress
+      (snapshot) => {
+        const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+        setUploadProgress(pct, `กำลังอัปโหลด ${pct}%...`);
+      },
+      // Error
+      (err) => {
+        console.error('Firebase upload error:', err);
+        reject(err);
+      },
+      // Complete
+      async () => {
+        const downloadURL = await uploadTask.snapshot.ref.getDownloadURL();
+        setUploadProgress(100, 'อัปโหลดสลิปสำเร็จ ✓');
+        setTimeout(() => hideUploadProgress(), 1500);
+        resolve(downloadURL);
+      }
+    );
+  });
+}
+
+function setUploadProgress(pct, text) {
+  document.getElementById('upload-progress').style.display = 'block';
+  document.getElementById('upload-progress-fill').style.width = pct + '%';
+  document.getElementById('upload-progress-text').textContent = text;
+}
+
+function hideUploadProgress() {
+  document.getElementById('upload-progress').style.display = 'none';
+  document.getElementById('upload-progress-fill').style.width = '0%';
+}
+
+// ─── Load Data from Sheet ─────────────────────────────────────
 async function loadData() {
   try {
     const res = await fetch(API + '?action=getAll');
@@ -257,13 +312,13 @@ async function loadData() {
   }
 }
 
-// ─── Progress ────────────────────────────────────────────────
+// ─── Render Progress ─────────────────────────────────────────
 function renderProgress(config, payments) {
   const total = parseFloat(config?.total_debt) || 20000;
   const paid = (payments||[]).reduce((s,p) => s + parseFloat(p.amount||0), 0);
   const remain = Math.max(0, total - paid);
   const pct = total > 0 ? Math.min(100, Math.round(paid/total*100)) : 0;
-  const C = 2 * Math.PI * 70;
+  const C = 2 * Math.PI * 70; // 439.82
   document.getElementById('circle-prog').style.strokeDashoffset = C - (pct/100)*C;
   document.getElementById('pct-text').textContent = pct + '%';
   document.getElementById('paid-amount').textContent = '฿' + paid.toLocaleString('th-TH');
@@ -274,7 +329,7 @@ function renderProgress(config, payments) {
     `<strong>${debtor}</strong> ยืม <strong>${creditor}</strong> ทั้งหมด ฿${total.toLocaleString('th-TH')}`;
 }
 
-// ─── History ─────────────────────────────────────────────────
+// ─── Render History ───────────────────────────────────────────
 function renderHistory(payments) {
   const el = document.getElementById('history-container');
   if (!payments || !payments.length) {
@@ -285,18 +340,29 @@ function renderHistory(payments) {
     const id = 'h' + i;
     const date = formatDate(p.date);
     const hasSlip = !!p.slip_url;
-    const notePreview = p.note ? `<div class="history-note-preview">${p.note}</div>` : '';
-    const slipBadge = hasSlip ? ' <span class="badge-slip">📎 สลิป</span>' : '';
-
+    const notePreview = p.note
+      ? `<div class="history-note-preview">${escHtml(p.note)}</div>`
+      : '';
+    const slipBadge = hasSlip
+      ? `<span class="badge-slip">📎 สลิป</span>`
+      : '';
     const detailNote = p.note
-      ? `<div class="detail-row"><span class="detail-label">โน้ต</span><span class="detail-value">${p.note}</span></div>`
+      ? `<div class="detail-row">
+           <span class="detail-label">โน้ต</span>
+           <span class="detail-value">${escHtml(p.note)}</span>
+         </div>`
       : '';
     const detailSlip = hasSlip
       ? `<div class="detail-row" style="flex-direction:column">
-          <img src="${p.slip_url}" class="slip-thumb" alt="สลิป" onclick="openLightbox('${p.slip_url}')" onerror="this.style.display='none'"/>
-          <a href="${p.slip_url}" target="_blank" class="slip-link">🔗 เปิดสลิปในแท็บใหม่</a>
-        </div>`
-      : '<div class="detail-row"><span class="detail-label">สลิป</span><span class="detail-value" style="color:var(--gray-400)">ไม่มีสลิป</span></div>';
+           <img src="${p.slip_url}" class="slip-thumb" alt="สลิป"
+             onclick="openLightbox('${p.slip_url}')"
+             onerror="this.style.display='none'"/>
+           <a href="${p.slip_url}" target="_blank" class="slip-link">🔗 เปิดสลิปในแท็บใหม่</a>
+         </div>`
+      : `<div class="detail-row">
+           <span class="detail-label">สลิป</span>
+           <span class="detail-value" style="color:var(--gray-400)">ไม่มีสลิป</span>
+         </div>`;
 
     return `
     <div class="history-item">
@@ -304,7 +370,7 @@ function renderHistory(payments) {
         <div class="history-dot"></div>
         <div class="history-info">
           <div class="history-top">
-            <span class="history-amount">+฿${parseFloat(p.amount).toLocaleString('th-TH')}${slipBadge}</span>
+            <span class="history-amount">+฿${parseFloat(p.amount).toLocaleString('th-TH')} ${slipBadge}</span>
             <span class="history-date">${date}</span>
           </div>
           ${notePreview}
@@ -318,7 +384,9 @@ function renderHistory(payments) {
         </div>
         <div class="detail-row">
           <span class="detail-label">ยอด</span>
-          <span class="detail-value" style="font-weight:600;color:var(--green-dark)">฿${parseFloat(p.amount).toLocaleString('th-TH')}</span>
+          <span class="detail-value" style="font-weight:600;color:var(--green-dark)">
+            ฿${parseFloat(p.amount).toLocaleString('th-TH')}
+          </span>
         </div>
         ${detailNote}
         ${detailSlip}
@@ -337,6 +405,7 @@ function toggleDetail(id) {
 
 // ─── Lightbox ────────────────────────────────────────────────
 function openLightbox(url) {
+  event.stopPropagation(); // ไม่ให้ trigger toggleDetail
   document.getElementById('lightbox-img').src = url;
   document.getElementById('lightbox').classList.add('open');
 }
@@ -344,56 +413,25 @@ function closeLightbox() {
   document.getElementById('lightbox').classList.remove('open');
 }
 
-// ─── File Handling ───────────────────────────────────────────
+// ─── File Select ─────────────────────────────────────────────
 function handleFile(input) {
   const file = input.files[0];
   if (!file) return;
+  selectedFile = file; // เก็บ File object ไว้ upload ภายหลัง
+
   const reader = new FileReader();
   reader.onload = e => {
-    // แยก base64 data และ mime
-    const result = e.target.result;
-    const parts = result.split(',');
-    const mimeMatch = parts[0].match(/:(.*?);/);
-    slipMime = mimeMatch ? mimeMatch[1] : 'image/jpeg';
-    slipBase64 = parts[1]; // เอาเฉพาะ base64 ไม่มี prefix
-    uploadedSlipUrl = ''; // reset
-
     document.getElementById('upload-text').textContent = '✓ ' + file.name;
     document.getElementById('upload-text').className = 'upload-text green';
     document.getElementById('upload-area').classList.add('has-file');
     const preview = document.getElementById('upload-preview');
-    preview.src = result;
+    preview.src = e.target.result;
     preview.style.display = 'block';
   };
   reader.readAsDataURL(file);
 }
 
-// อัปโหลดสลิปก่อน แล้วค่อย save payment
-async function uploadSlipToServer() {
-  if (!slipBase64) return '';
-  try {
-    document.getElementById('upload-progress').style.display = 'block';
-    document.getElementById('upload-progress-fill').style.width = '40%';
-    document.getElementById('upload-progress-text').textContent = 'กำลังอัปโหลดสลิป...';
-
-    // ส่งผ่าน GET เพื่อหลีกเลี่ยงปัญหา CORS/no-cors ของ Apps Script
-    const url = API + '?action=uploadSlip&mime=' + encodeURIComponent(slipMime) + '&data=' + encodeURIComponent(slipBase64);
-    const res = await fetch(url);
-    const data = await res.json();
-
-    document.getElementById('upload-progress-fill').style.width = '100%';
-    document.getElementById('upload-progress-text').textContent = 'อัปโหลดสลิปสำเร็จ ✓';
-    setTimeout(() => { document.getElementById('upload-progress').style.display = 'none'; }, 1500);
-
-    return data.url || '';
-  } catch(e) {
-    document.getElementById('upload-progress').style.display = 'none';
-    console.error('upload slip failed', e);
-    return '';
-  }
-}
-
-// ─── Submit Payment ──────────────────────────────────────────
+// ─── Submit Payment ───────────────────────────────────────────
 async function submitPayment() {
   const amtEl = document.getElementById('pay-amount');
   const amt = parseFloat(amtEl.value);
@@ -404,15 +442,25 @@ async function submitPayment() {
   btn.textContent = 'กำลังบันทึก...';
 
   try {
-    // 1. อัปโหลดสลิปก่อน (ถ้ามี)
+    // 1. อัปโหลดสลิปขึ้น Firebase Storage (ถ้ามี)
     let slipUrl = '';
-    if (slipBase64) {
-      slipUrl = await uploadSlipToServer();
+    if (selectedFile) {
+      btn.textContent = 'กำลังอัปโหลดสลิป...';
+      try {
+        slipUrl = await uploadSlipToFirebase(selectedFile);
+      } catch(uploadErr) {
+        showToast('อัปโหลดสลิปไม่สำเร็จ: ' + uploadErr.message, true);
+        btn.disabled = false;
+        btn.textContent = 'บันทึกการชำระ';
+        return;
+      }
     }
 
-    // 2. save payment พร้อม slip_url
+    // 2. บันทึกลง Google Sheet (ผ่าน Apps Script)
+    btn.textContent = 'กำลังบันทึก...';
     const note = document.getElementById('pay-note').value.trim();
-    const saveUrl = API + '?action=addPayment'
+    const saveUrl = API
+      + '?action=addPayment'
       + '&amount=' + amt
       + '&note=' + encodeURIComponent(note)
       + '&slip_url=' + encodeURIComponent(slipUrl);
@@ -438,13 +486,13 @@ async function submitPayment() {
 }
 
 function resetUpload() {
-  slipBase64 = null;
-  uploadedSlipUrl = '';
+  selectedFile = null;
   document.getElementById('slip-input').value = '';
   document.getElementById('upload-text').textContent = 'กดเพื่อเลือกรูปสลิป';
   document.getElementById('upload-text').className = 'upload-text';
   document.getElementById('upload-area').classList.remove('has-file');
   document.getElementById('upload-preview').style.display = 'none';
+  hideUploadProgress();
 }
 
 // ─── Settings ────────────────────────────────────────────────
@@ -456,7 +504,8 @@ function prefillSettings(config) {
 }
 
 async function saveConfig() {
-  const url = API + '?action=updateConfig'
+  const url = API
+    + '?action=updateConfig'
     + '&total_debt=' + document.getElementById('cfg-total').value
     + '&creditor_name=' + encodeURIComponent(document.getElementById('cfg-creditor').value)
     + '&debtor_name=' + encodeURIComponent(document.getElementById('cfg-debtor').value);
@@ -477,9 +526,16 @@ function toggleSettings() {
 function formatDate(iso) {
   if (!iso) return '';
   try {
-    const d = new Date(iso);
-    return d.toLocaleDateString('th-TH', {day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+    return new Date(iso).toLocaleDateString('th-TH', {
+      day:'numeric', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+    });
   } catch(e) { return iso; }
+}
+
+function escHtml(str) {
+  return String(str)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function showToast(msg, isError) {
@@ -489,6 +545,7 @@ function showToast(msg, isError) {
   setTimeout(() => t.className = 'toast', 2800);
 }
 
+// ─── Init ─────────────────────────────────────────────────────
 loadData();
 </script>
 </body>
